@@ -1,0 +1,155 @@
+﻿<Page
+    x:Class="Kurosuke_Universal.Pages.UserDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Universal.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Azure">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Azure" Click="BackButtonClicked">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center">User</TextBlock>
+        </Grid>
+
+
+        <Grid Grid.Row="1" Margin="0,15,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="5*"/>
+            </Grid.RowDefinitions>
+            <Image Grid.Row="0" Tapped="UserNameTapped" Source="{Binding Path=user.profile_image_url_https}" HorizontalAlignment="Center"/>
+            <StackPanel Grid.Row="1" Orientation="Vertical">
+                <StackPanel.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="TextWrapping" Value="WrapWholeWords"/>
+                    </Style>
+                </StackPanel.Resources>
+                <StackPanel Orientation="Vertical" Tapped="UserNameTapped" >
+                    <TextBlock FontSize="18" Text="{Binding Path=user.name}"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock FontSize="16" Foreground="DarkGray" VerticalAlignment="Center">@</TextBlock>
+                        <TextBlock FontSize="16" Foreground="DarkGray" VerticalAlignment="Center" Text="{Binding Path=user.screen_name}"/>
+                        <Image Height="25" Margin="5,0,0,0" VerticalAlignment="Center" Source="{Binding Path=keyImageUrl}"></Image>
+                    </StackPanel>
+                </StackPanel>
+                <TextBlock FontSize="16" Margin="0,5,0,0" Foreground="DarkGray" Text="{Binding Path=user.location}"/>
+                <Button HorizontalAlignment="Stretch" Height="45" FontSize="20" Command="{Binding Path=FollowCommand}" Content="{Binding Path=buttonText}" Background="{Binding Path=buttonColor}"></Button>
+                <TextBlock FontSize="16" Margin="0,5,0,0" Text="{Binding Path=user.description}"/>
+                <Grid Height="55" HorizontalAlignment="Stretch">
+                    <Grid.Resources>
+                        <ResourceDictionary>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="FontSize" Value="16"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                            </Style>
+                            <Style TargetType="Button">
+                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                <Setter Property="Background" Value="White"/>
+                            </Style>
+                        </ResourceDictionary>
+                    </Grid.Resources>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" Click="GoToTweetlistPage">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Tweets</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=user.statuses_count}"></TextBlock>
+                        </Grid>
+                    </Button>
+                    <Button Grid.Column="1" Click="FriendsClicked">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Following</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=user.friends_count}"></TextBlock>
+                        </Grid>
+                    </Button>
+                    <Button Grid.Column="2" Click="FollowersCliced">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Followed</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=user.followers_count}"></TextBlock>
+                        </Grid>
+                    </Button>
+                    <Button Grid.Column="3">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Listed</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=user.listed_count}"></TextBlock>
+                        </Grid>
+                    </Button>
+                </Grid>
+                <Grid Margin="0,10,0,0">
+                    <Grid.Resources>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="FontSize" Value="16"/>
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="55"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Followed By</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=relationship.source.followed_by}"></TextBlock>
+                        </Grid>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Foreground="DarkGray">Blocking</TextBlock>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=relationship.source.blocking}"></TextBlock>
+                        </Grid>
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </Grid>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,61 @@
+﻿<Page
+    x:Class="Kurosuke_Universal.Pages.Settings.VisualSettingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Universal.Pages.Settings"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Azure">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Azure" Click="BackButtonClicked">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center">Setting > Appearance</TextBlock>
+        </Grid>
+
+
+        <Grid Grid.Row="1">
+            <StackPanel Orientation="Vertical" Margin="15,15,0,0">
+                <TextBlock x:Uid="Settings_Visual_Timeline_Title" FontSize="20" Margin="0,0,0,5" FontFamily="Yu Gothic UI Light">
+                </TextBlock>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                    <TextBlock x:Uid="Settings_Visual_Timeline_TweetCountTitle" FontSize="15" Margin="0,0,0,5">
+                    </TextBlock>
+                    <ComboBox x:Name="TweetCountBox" SelectionChanged="TweetCountChanged">
+                        <ComboBoxItem>
+                            50
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            100
+                        </ComboBoxItem>
+                        <ComboBoxItem>
+                            150
+                        </ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                <StackPanel Orientation="Vertical" Margin="0,0,0,5">
+                    <TextBlock x:Uid="Settings_Visual_Timeline_TweetFontSizeTitle" FontSize="15" Margin="0,0,0,5">
+                    </TextBlock>
+                    <ComboBox x:Name="TextFontSizeBox" SelectionChanged="TextFontSizeChanged">
+                        <ComboBoxItem x:Uid="Settings_Visual_Timeline_TweetFontSizeBig">
+                        </ComboBoxItem>
+                        <ComboBoxItem x:Uid="Settings_Visual_Timeline_TweetFontSizeMedium">
+                        </ComboBoxItem>
+                        <ComboBoxItem x:Uid="Settings_Visual_Timeline_TweetFontSizeSmall">
+                        </ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

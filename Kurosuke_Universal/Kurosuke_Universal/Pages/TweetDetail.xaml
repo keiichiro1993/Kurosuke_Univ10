@@ -1,0 +1,305 @@
+﻿<Page
+    x:Class="Kurosuke_Universal.Pages.TweetDetail"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Universal.Pages"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+
+
+
+    <Grid x:Name="mainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.Resources>
+            <ResourceDictionary>
+                <Flyout x:Key="RetweetFlyout" x:Name="RetweetFlyout">
+                    <StackPanel>
+                        <TextBlock>どのユーザーでリツイート？</TextBlock>
+                        <MenuFlyoutSeparator></MenuFlyoutSeparator>
+                        <ListBox x:Name="RetweetUserListBox" ItemsSource="{Binding}" SelectionMode="Multiple">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="50"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Image Margin="0" Source="{Binding Path=user.profile_image_url_https}"></Image>
+                                        <StackPanel Grid.Column="1" Orientation="Vertical">
+                                            <TextBlock Text="{Binding Path=user.name}"></TextBlock>
+                                            <TextBlock Text="{Binding Path=user.screen_name}"></TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <MenuFlyoutSeparator></MenuFlyoutSeparator>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Click="RetweetCommand">Retweet</Button>
+                            <Button Click="QuoteTweet" Margin="5,0,0,0" Background="LightBlue">QuoteTweet</Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Flyout>
+            </ResourceDictionary>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Azure">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Azure" Click="BackButtonClicked">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center">Tweet</TextBlock>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <ScrollViewer>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                    <Grid x:Name="mainTweetGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="1.5"/>
+                            <RowDefinition Height="35"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0" DataContext="{Binding Path=tweet}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <Grid Grid.Column="0">
+                                    <Image Source="{Binding Path=user.profile_image_url_https}" VerticalAlignment="Top"/>
+                                </Grid>
+
+                                <Button Grid.Column="1" HorizontalContentAlignment="Left" HorizontalAlignment="Stretch" Click="UserClicked" Background="White">
+                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                        <TextBlock Margin="5,0,0,0" Text="{Binding Path=user.name}" FontWeight="Bold" TextWrapping="Wrap" FontSize="20"/>
+                                        <TextBlock Grid.Column="0" Text="{Binding Path=user.screen_name}" TextWrapping="Wrap" FontWeight="Normal" FontSize="20" Foreground="Gray" HorizontalAlignment="Left"  Margin="5,0,0,0"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding Path=created_at_datetime}" FontWeight="Normal" FontSize="15" Foreground="Gray" Margin="0,0,10,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                            <TextBlock Grid.Row="1" Text="{Binding Path=text}" TextWrapping="Wrap" FontWeight="Normal" FontSize="20">
+                            </TextBlock>
+
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="via" HorizontalAlignment="Right" FontWeight="Normal" FontSize="15" Margin="0,0,3,0">
+                                </TextBlock>
+                                <TextBlock Text="{Binding Path=source}" HorizontalAlignment="Right" FontWeight="Normal" FontSize="15">
+                                </TextBlock>
+                            </StackPanel>
+
+                            <ItemsControl Grid.Row="3" ItemsSource="{Binding Path=extended_entities.media}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Margin="0" Padding="0" Click="MediaUrlClicked" >
+                                            <Image Source="{Binding Path=media_url_https}" HorizontalAlignment="Stretch"></Image>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <Grid Grid.Row="4" Height="55" HorizontalAlignment="Stretch">
+                                <Grid.Resources>
+                                    <ResourceDictionary>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontSize" Value="16"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        </Style>
+                                        <Style TargetType="Button">
+                                            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                            <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                            <Setter Property="Background" Value="White"/>
+                                        </Style>
+                                    </ResourceDictionary>
+                                </Grid.Resources>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Click="RetweetedCountClicked">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Foreground="DarkGray">Retweeted</TextBlock>
+                                        <TextBlock Grid.Row="1" Text="{Binding Path=retweet_count}"></TextBlock>
+                                    </Grid>
+                                </Button>
+                                <Button Grid.Column="1">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="*"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Foreground="DarkGray">Favorited</TextBlock>
+                                        <TextBlock Grid.Row="1" Text="{Binding Path=favorite_count}"></TextBlock>
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </Grid>
+
+                        <Grid Grid.Row="1">
+                            <Border BorderThickness="1" BorderBrush="Aqua" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                        </Grid>
+
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Command="{Binding Path=FavoriteCommand}">
+                                <Image Source="{Binding Path=favoriteImageUrl}"></Image>
+                            </Button>
+                            <Button Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="RetweetButtonClicked">
+                                <Image Source="{Binding Path=retweetedImageUrl}"></Image>
+                            </Button>
+                            <Button Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="ReplyButtonClicked">
+                                <Image Source="{Binding Path=replyImageUrl}"></Image>
+                            </Button>
+                            <Button Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1">
+                                <Button.Content>
+                                    ...
+                                </Button.Content>
+                                <Button.Flyout>
+                                    <Flyout>
+                                        <StackPanel Orientation="Vertical">
+                                            <TextBlock>Links</TextBlock>
+                                            <ScrollViewer HorizontalScrollMode="Disabled">
+                                                <ItemsControl ItemsSource="{Binding Path=tweet.entities.urls}">
+                                                    <ItemsControl.ItemTemplate>
+                                                        <DataTemplate>
+                                                            <Button Content="{Binding Path=display_url}" Click="UrlsClicked">
+                                                            </Button>
+                                                        </DataTemplate>
+                                                    </ItemsControl.ItemTemplate>
+                                                </ItemsControl>
+                                            </ScrollViewer>
+                                        </StackPanel>
+                                    </Flyout>
+                                </Button.Flyout>
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <ItemsControl x:Name="RelatedTweetsItemsControl" ItemsSource="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="0" Padding="0" HorizontalContentAlignment="Stretch" HorizontalAlignment="Stretch" Background="White" Click="TweetItemClicked" >
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="1.5"/>
+                                            <RowDefinition Height="35"/>
+                                        </Grid.RowDefinitions>
+
+                                        <Grid Grid.Row="0" DataContext="{Binding Path=tweet}">
+
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Grid Grid.Column="0">
+                                                <Image Source="{Binding Path=user.profile_image_url_https}" VerticalAlignment="Top"/>
+                                            </Grid>
+
+                                            <Grid Grid.Column="1" HorizontalAlignment="Stretch">
+                                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                                    <TextBlock Margin="5,0,0,0" Text="{Binding Path=user.name}" FontWeight="Bold" TextWrapping="Wrap" FontSize="12"/>
+                                                    <Grid HorizontalAlignment="Stretch">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding Path=user.screen_name}" TextWrapping="Wrap" FontWeight="Normal" FontSize="10" Foreground="Gray" HorizontalAlignment="Left"  Margin="5,0,0,0"/>
+                                                        <TextBlock Grid.Column="1" Text="{Binding Path=created_at_time}" HorizontalAlignment="Right" FontWeight="Normal" FontSize="10" Foreground="Gray" Margin="0,0,10,0"/>
+                                                    </Grid>
+                                                    <TextBlock Text="{Binding Path=text}" TextWrapping="Wrap" FontWeight="Normal" FontSize="12">
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid Grid.Row="1">
+                                            <Border BorderThickness="1" BorderBrush="Aqua" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                                        </Grid>
+
+                                        <Grid Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <Button Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Command="{Binding Path=FavoriteCommand}">
+                                                <Image Source="{Binding Path=favoriteImageUrl}"></Image>
+                                            </Button>
+                                            <Button Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="RetweetButtonClicked">
+                                                <Image Source="{Binding Path=retweetedImageUrl}"></Image>
+                                            </Button>
+                                            <Button Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="ReplyButtonClicked">
+                                                <Image Source="{Binding Path=replyImageUrl}"></Image>
+                                            </Button>
+                                            <Button Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1">
+                                                <Button.Content>
+                                                    ...
+                                                </Button.Content>
+                                                <Button.Flyout>
+                                                    <Flyout>
+                                                        <StackPanel Orientation="Vertical">
+                                                            <TextBlock>Links</TextBlock>
+                                                            <ScrollViewer HorizontalScrollMode="Disabled">
+                                                                <ItemsControl ItemsSource="{Binding Path=tweet.entities.urls}">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Button Content="{Binding Path=display_url}" Click="UrlsClicked">
+                                                                            </Button>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </ScrollViewer>
+                                                            <MenuFlyoutSeparator/>
+                                                            <TextBlock>Medias</TextBlock>
+                                                            <ScrollViewer HorizontalScrollMode="Disabled">
+                                                                <ItemsControl ItemsSource="{Binding Path=tweet.entities.media}">
+                                                                    <ItemsControl.ItemTemplate>
+                                                                        <DataTemplate>
+                                                                            <Button Content="{Binding Path=display_url}" Click="MediaUrlClicked">
+                                                                            </Button>
+                                                                        </DataTemplate>
+                                                                    </ItemsControl.ItemTemplate>
+                                                                </ItemsControl>
+                                                            </ScrollViewer>
+                                                        </StackPanel>
+                                                    </Flyout>
+                                                </Button.Flyout>
+                                            </Button>
+                                        </Grid>
+                                    </Grid>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Page>

@@ -1,0 +1,420 @@
+﻿<Page xmlns:Universal="using:Microsoft.AdMediator.Universal"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Universal"
+    xmlns:selector="using:Kurosuke_Universal.Selectors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:custom="using:Kurosuke_Universal.CustomControl"
+    x:Class="Kurosuke_Universal.MainPage"
+    mc:Ignorable="d"
+    NavigationCacheMode="Enabled"
+    >
+
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <!--ツイートのコア部分テンプレ（これをボタンのテンプレートにする）-->
+            <ControlTemplate x:Key="TweetTemplateBase">
+                <Grid Background="{Binding ButtonColor}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="1.5"/>
+                        <RowDefinition Height="35"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" DataContext="{Binding tweet}">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <Image Source="{Binding user.profile_image_url_https}" VerticalAlignment="Top"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1" HorizontalAlignment="Stretch">
+                            <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                                <TextBlock Margin="5,0,0,0" Text="{Binding user.name}" FontWeight="Bold" TextWrapping="Wrap" FontSize="12"/>
+                                <Grid HorizontalAlignment="Stretch">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding user.screen_name}" TextWrapping="Wrap" FontWeight="Normal" FontSize="10" Foreground="Gray" HorizontalAlignment="Left"  Margin="5,0,0,0"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding created_at_time}" HorizontalAlignment="Right" FontWeight="Normal" FontSize="10" Foreground="Gray" Margin="0,0,10,0"/>
+                                </Grid>
+                                <TextBlock Text="{Binding text}" TextWrapping="Wrap" FontWeight="Normal" FontSize="{Binding text_font_size}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                    <Grid Grid.Row="1">
+                        <Border BorderThickness="1" BorderBrush="Aqua" VerticalAlignment="Top" HorizontalAlignment="Stretch"/>
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Command="{Binding FavoriteCommand}">
+                            <Image Source="{Binding favoriteImageUrl}"/>
+                        </Button>
+                        <Button Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="RetweetButtonClicked">
+                            <Image Source="{Binding retweetedImageUrl}"/>
+                        </Button>
+                        <Button Grid.Column="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1" Click="ReplyButtonClicked" >
+                            <Image Source="{Binding replyImageUrl}"/>
+                        </Button>
+                        <Button Grid.Column="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="1">
+                            <Button.Flyout>
+                                <Flyout>
+                                    <StackPanel Orientation="Vertical">
+                                        <TextBlock>
+            								<Run Text="Link"/>
+                                        </TextBlock>
+                                        <ScrollViewer HorizontalScrollMode="Disabled">
+                                            <ItemsControl ItemsSource="{Binding tweet.entities.urls}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="{Binding display_url}" Click="UrlsClicked"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                        <MenuFlyoutSeparator/>
+                                        <TextBlock>
+            								<Run Text="Media"/>
+                                        </TextBlock>
+                                        <ScrollViewer HorizontalScrollMode="Disabled">
+                                            <ItemsControl ItemsSource="{Binding tweet.entities.media}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="{Binding display_url}" Click="MediaUrlClicked"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </StackPanel>
+                                </Flyout>
+                            </Button.Flyout> ...
+                        </Button>
+                    </Grid>
+                </Grid>
+            </ControlTemplate>
+
+            <!--リツイート用テンプレート-->
+            <DataTemplate x:Key="RetweetTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Margin="5,0,5,0" Source="{Binding subImage}" MaxWidth="15" MaxHeight="15"/>
+                        <TextBlock VerticalAlignment="Center" FontSize="12" Text="{Binding message}"/>
+                    </StackPanel>
+                    <Button Grid.Row="1" BorderThickness="0" Padding="0" Margin="0,0,0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Template="{StaticResource ResourceKey=TweetTemplateBase}" Click="GoToDetail"/>
+                </Grid>
+            </DataTemplate>
+
+            <!--Tweetのテンプレート-->
+            <DataTemplate x:Key="TweetTemplate">
+                <Button BorderThickness="0" Padding="0" Margin="0,0,0,8" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Template="{StaticResource ResourceKey=TweetTemplateBase}" Click="GoToDetail"/>
+            </DataTemplate>
+
+            <!--LoadButtonのテンプレート-->
+            <DataTemplate x:Key="LoadButtonTemplate">
+                <Button Command="{Binding LoadCommand}" Height="100" BorderThickness="0" Padding="0" Margin="0,0,0,8" Background="White" HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch">
+                    <TextBlock x:Uid="LoadMore" FontSize="25" HorizontalAlignment="Center"/>
+                </Button>
+            </DataTemplate>
+
+            <!--Flyoutに使うユーザーのテンプレート-->
+            <DataTemplate x:Key="FlyoutUserTemplate">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="50"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Margin="0" Source="{Binding user.profile_image_url_https}"/>
+                    <StackPanel Grid.Column="1" Orientation="Vertical">
+                        <TextBlock Text="{Binding user.name}"/>
+                        <TextBlock Text="{Binding user.screen_name}"/>
+                    </StackPanel>
+                </Grid>
+            </DataTemplate>
+
+
+
+
+            <DataTemplate x:Key="AdvertisingTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="60"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock FontSize="45" Margin="10,0,0,0" VerticalAlignment="Center">
+            			<Run Text="Advertising"/>
+                    </TextBlock>
+                    <Universal:AdMediatorControl Grid.Row="1" Width="300" Height="250" x:Name="MainPageFlipViewAd" Id="MainPageFlipViewAd" HorizontalAlignment="Center" VerticalAlignment="Center"></Universal:AdMediatorControl>
+                    <Button Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="CloseAd">
+                        <TextBlock FontSize="30" x:Uid="Close"/>
+                    </Button>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="MobileAdvertisingTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="60"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock FontSize="45" Margin="10,0,0,0" VerticalAlignment="Center">
+            			<Run Text="Advertising"/>
+                    </TextBlock>
+                    <Universal:AdMediatorControl Grid.Row="1" Width="320" Height="50" x:Name="MainPageFlipViewAdMobile" Id="MainPageFlipViewAdMobile" HorizontalAlignment="Center" VerticalAlignment="Center"></Universal:AdMediatorControl>
+                    <Button Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="CloseAd">
+                        <TextBlock FontSize="30" x:Uid="Close"/>
+                    </Button>
+                </Grid>
+            </DataTemplate>
+
+            <Flyout x:Key="RetweetFlyout" x:Name="RetweetFlyout">
+                <StackPanel>
+                    <TextBlock x:Uid="RetweetUserSelect"/>
+                    <MenuFlyoutSeparator/>
+                    <ListBox x:Name="RetweetUserListBox" ItemsSource="{Binding}" SelectionMode="Multiple" ItemTemplate="{StaticResource FlyoutUserTemplate}"/>
+                    <MenuFlyoutSeparator/>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Click="RetweetCommand" Content="Retweet"/>
+                        <Button Click="QuoteTweet" Margin="5,0,0,0" Background="LightBlue" Content="QuoteTweet"/>
+                    </StackPanel>
+                </StackPanel>
+            </Flyout>
+
+
+
+
+            <selector:MainTLSelector x:Key="MainTLSelector"
+                                     TweetTemplate="{StaticResource TweetTemplate}"
+                                     EventTemplate="{StaticResource RetweetTemplate}"
+                                     LoadButtonTemplate="{StaticResource LoadButtonTemplate}"/>
+
+
+            <ControlTemplate x:Key="TimeLineControlTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Background="Azure">
+                        <TextBlock VerticalAlignment="Center" Text="{Binding columnTitle}" FontSize="20" Margin="0"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding tweetList}" ItemTemplateSelector="{StaticResource MainTLSelector}" HorizontalContentAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Grid>
+            </ControlTemplate>
+
+            <DataTemplate x:Key="TimeLineTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Background="Azure">
+                        <TextBlock VerticalAlignment="Center" Text="{Binding columnTitle}" FontSize="20" Margin="0"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding tweetList}" ItemTemplateSelector="{StaticResource MainTLSelector}" HorizontalContentAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="WideTimeLineTemplate">
+                <Grid Width="400" BorderBrush="Azure" BorderThickness="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Background="Azure">
+                        <TextBlock VerticalAlignment="Center" Text="{Binding columnTitle}" FontSize="20" Margin="0"/>
+                    </Grid>
+                    <ScrollViewer Grid.Row="1" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding tweetList}" ItemTemplateSelector="{StaticResource MainTLSelector}" HorizontalContentAlignment="Stretch"/>
+                    </ScrollViewer>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="AccountColumnTemplate">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" VerticalAlignment="Center" x:Name="ScreenName" Text="{Binding columnTitle}" FontSize="20" Margin="0"/>
+                    <!--FlipViewの中にFlipView-->
+                    <custom:CustomFlipView Grid.Row="1" ItemsSource="{Binding tweetColumns}" Background="white" ItemTemplate="{StaticResource TimeLineTemplate}"/>
+                </Grid>
+            </DataTemplate>
+
+            <DataTemplate x:Key="WideAccountColumnTemplate">
+                <Grid BorderBrush="LightGray" BorderThickness="2" Margin="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid Background="LightGray">
+                        <TextBlock VerticalAlignment="Center" x:Name="ScreenName" Text="{Binding columnTitle}" FontSize="20" Margin="0"/>
+                    </Grid>
+                    <!--FlipViewの中にFlipView-->
+                    <ItemsControl Grid.Row="1" ItemsSource="{Binding tweetColumns}" Background="white" ItemTemplate="{StaticResource WideTimeLineTemplate}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Grid>
+            </DataTemplate>
+
+            <selector:ColumnSelector x:Key="NarrowColumnSelector"
+                                     AccountColumnTemplate="{StaticResource ResourceKey=AccountColumnTemplate}"
+                                     AdvertisingColumnTemplate="{StaticResource ResourceKey=AdvertisingTemplate}"
+                                     MobileAdvertisingColumnTemplate="{StaticResource ResourceKey=MobileAdvertisingTemplate}"/>
+
+            <selector:ColumnSelector x:Key="WideColumnSelector"
+                                     AccountColumnTemplate="{StaticResource ResourceKey=WideAccountColumnTemplate}"
+                                     AdvertisingColumnTemplate="{StaticResource ResourceKey=AdvertisingTemplate}"
+                                     MobileAdvertisingColumnTemplate="{StaticResource ResourceKey=MobileAdvertisingTemplate}"/>
+
+
+            <ControlTemplate x:Key="NarrowPageTemplate">
+                <custom:CustomFlipView Padding="0" Margin="0" ItemsSource="{Binding columns}" ItemTemplateSelector="{StaticResource ResourceKey=NarrowColumnSelector}" x:Name="TweetFlip"/>
+            </ControlTemplate>
+
+            <ControlTemplate x:Key="WidePageTemplate">
+                <ScrollViewer VerticalAlignment="Stretch" VerticalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" HorizontalScrollMode="Enabled" HorizontalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding columns}" ItemTemplateSelector="{StaticResource ResourceKey=WideColumnSelector}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </ScrollViewer>
+            </ControlTemplate>
+        </ResourceDictionary>
+    </Page.Resources>
+
+
+
+    <Page.BottomAppBar>
+        <AppBar VerticalAlignment="Bottom">
+            <StackPanel Orientation="Horizontal">
+                <AppBarButton VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" Tapped="SettingsButtonTapped" >
+                    <Image Source="/Assets/Icons/settings.png"/>
+                </AppBarButton>
+                <AppBarButton VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" Tapped="NewTweetButtonClicked" >
+                    <Image Source="/Assets/Icons/send_image.png"/>
+                </AppBarButton>
+                <AppBarButton VerticalContentAlignment="Stretch" VerticalAlignment="Stretch" Tapped="SearchButtonClicked" >
+                    <Image Source="/Assets/Icons/search.png"/>
+                </AppBarButton>
+            </StackPanel>
+        </AppBar>
+    </Page.BottomAppBar>
+
+
+
+    <Grid x:Name="MainGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.Resources>
+            <ResourceDictionary/>
+        </Grid.Resources>
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowStates">
+                <VisualStateGroup.Transitions>
+                    <VisualTransition GeneratedDuration="0:0:0.5">
+                        <VisualTransition.GeneratedEasingFunction>
+                            <CubicEase EasingMode="EaseInOut"/>
+                        </VisualTransition.GeneratedEasingFunction>
+                    </VisualTransition>
+                </VisualStateGroup.Transitions>
+                <VisualState x:Name="WideState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="950" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TimeLineContainerButton.Template" Value="{StaticResource ResourceKey=WidePageTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="MiddleState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="800" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TimeLineContainerButton.Template" Value="{StaticResource ResourceKey=WidePageTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="TimeLineContainerButton.Template" Value="{StaticResource ResourceKey=NarrowPageTemplate}" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="85"/>
+        </Grid.RowDefinitions>
+
+        <Button x:Name="TimeLineContainerButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Template="{StaticResource NarrowPageTemplate}">
+        </Button>
+
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="33"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <ListBox Margin="0" Padding="0" SelectionMode="Multiple" ItemsSource="{Binding tokens}" x:Name="TweetUserList">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="0" Padding="0"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Image Margin="0" Width="30" Height="30" Source="{Binding user.profile_image_url_https}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <!--横向きリストボックスでユーザーを選択-->
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="80"/>
+                </Grid.ColumnDefinitions>
+                <custom:TextBoxForTweet x:Name="TweetTextBox" Grid.Column="0" />
+                <Button Grid.Column="1" x:Name="TweetButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Click="TweetButton_Click" Content="Tweet"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</Page>

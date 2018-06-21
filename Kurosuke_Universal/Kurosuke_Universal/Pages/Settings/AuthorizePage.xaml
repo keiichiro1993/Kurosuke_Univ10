@@ -1,0 +1,42 @@
+﻿<Page
+    x:Class="Kurosuke_Universal.Pages.Settings.AuthorizePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Univ.Pages.Settings"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Azure">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Azure" Click="BackButtonClicked">
+                <SymbolIcon Symbol="Back"></SymbolIcon>
+            </Button>
+            <TextBlock Grid.Column="1" VerticalAlignment="Center">Setting > Authorize</TextBlock>
+        </Grid>
+        <Grid Grid.Row="1">
+            <WebView x:Name="AuthWebView"></WebView>
+        </Grid>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="70"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock FontSize="30" VerticalAlignment="Center" Margin="5,0,10,0">PIN:</TextBlock>
+            <TextBox VerticalContentAlignment="Center" FontSize="30" x:Name="PINBox" Grid.Column="1" HorizontalAlignment="Stretch"></TextBox>
+        </Grid>
+        <Button FontSize="30" Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Tapped="AuthButtonTapped">
+            OK
+        </Button>
+    </Grid>
+</Page>

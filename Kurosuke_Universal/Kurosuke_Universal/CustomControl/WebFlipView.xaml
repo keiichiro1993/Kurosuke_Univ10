@@ -1,0 +1,101 @@
+﻿<UserControl
+    x:Class="Kurosuke_Universal.CustomControl.WebFlipView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Kurosuke_Universal.CustomControl"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:custom="using:Kurosuke_Universal.CustomControl"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="400">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1" x:Name="upperBrowserBar" Background="LightGray" HorizontalAlignment="Stretch" VerticalAlignment="Top" Height="50">
+            <Grid.Resources>
+                <ResourceDictionary>
+                    <Style TargetType="Border">
+                        <Setter Property="BorderBrush" Value="Gray"/>
+                        <Setter Property="Height" Value="30"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                        <Setter Property="BorderThickness" Value="0.7"/>
+                    </Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Background" Value="LightGray"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="FontSize" Value="17"/>
+                        <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                    <Style TargetType="Button">
+                        <Setter Property="Background" Value="LightGray"/>
+                        <Setter Property="Margin" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                    </Style>
+                </ResourceDictionary>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Click="BackButtonClicked">
+                <SymbolIcon Symbol="Back"/>
+            </Button>
+            <Button Grid.Column="1" Click="ForwardButtonClicked">
+                <SymbolIcon Symbol="Forward"/>
+            </Button>
+            <Button Grid.Column="2" Click="RefreshButtonClicked">
+                <SymbolIcon Symbol="Refresh"/>
+            </Button>
+            <Border Grid.Column="3"></Border>
+            <TextBox Grid.Column="4" x:Name="urlTextBlock" KeyUp="urlTextBlock_KeyUp"></TextBox>
+            <Button Grid.Column="5">
+                <Button.Content>
+                    ...
+                </Button.Content>
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuFlyoutItem>
+                            <MenuFlyoutItem.Template>
+                                <ControlTemplate>
+                                    <Button Click="OpenInBrowserButtonClicked">
+                                        <TextBlock x:Uid="OpenInBrowserButton">
+                                        </TextBlock>
+                                    </Button>
+                                </ControlTemplate>
+                            </MenuFlyoutItem.Template>
+                        </MenuFlyoutItem>
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+        </Grid>
+        <FlipView Grid.Row="0" x:Name="flipViewInstance" ItemsSource="{Binding}">
+            <FlipView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </FlipView.ItemsPanel>
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <custom:CustomWebView x:Name="WebViewContainer" Source="{Binding}"></custom:CustomWebView>
+                    </Grid>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+    </Grid>
+</UserControl>
